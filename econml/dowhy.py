@@ -60,7 +60,7 @@ class DoWhyWrapper:
         # Extract and sort argument names excluding 'self'
         return sorted(params)
 
-    def fit(self, Y, T, X=None, W=None, Z=None, *, outcome_names=None, treatment_names=None, feature_names=None,
+    def fit(self, Y_dowhy, T_dowhy, X_dowhy=None, W_dowhy=None, Z_dowhy=None, *, outcome_names=None, treatment_names=None, feature_names=None,
             confounder_names=None, instrument_names=None, graph=None, estimand_type="nonparametric-ate",
             proceed_when_unidentifiable=True, missing_nodes_as_confounders=False,
             control_value=0, treatment_value=1, target_units="ate", **kwargs):
@@ -69,15 +69,15 @@ class DoWhyWrapper:
 
         Parameters
         ----------
-        Y: vector of length n
+        Y_dowhy: vector of length n
             Outcomes for each sample
-        T: vector of length n
+        T_dowhy: vector of length n
             Treatments for each sample
-        X: (n, d_x) matrix, optional
+        X_dowhy: (n, d_x) matrix, optional
             Features for each sample
-        W: (n, d_w) matrix, optional
+        W_dowhy: (n, d_w) matrix, optional
             Controls for each sample
-        Z: (n, d_z) matrix, optional
+        Z_dowhy: (n, d_z) matrix, optional
             Instruments for each sample
         outcome_names: list, optional
             Name of the outcome
@@ -121,37 +121,37 @@ class DoWhyWrapper:
         """
         # column names
         if outcome_names is None:
-            outcome_names = get_input_columns(Y, prefix="Y")
+            outcome_names = get_input_columns(Y_dowhy, prefix="Y")
         if treatment_names is None:
-            treatment_names = get_input_columns(T, prefix="T")
+            treatment_names = get_input_columns(T_dowhy, prefix="T")
         if feature_names is None:
-            if X is not None:
-                feature_names = get_input_columns(X, prefix="X")
+            if X_dowhy is not None:
+                feature_names = get_input_columns(X_dowhy, prefix="X")
             else:
                 feature_names = []
         if confounder_names is None:
-            if W is not None:
-                confounder_names = get_input_columns(W, prefix="W")
+            if W_dowhy is not None:
+                confounder_names = get_input_columns(W_dowhy, prefix="W")
             else:
                 confounder_names = []
         if instrument_names is None:
-            if Z is not None:
-                instrument_names = get_input_columns(Z, prefix="Z")
+            if Z_dowhy is not None:
+                instrument_names = get_input_columns(Z_dowhy, prefix="Z")
             else:
                 instrument_names = []
         column_names = outcome_names + treatment_names + feature_names + confounder_names + instrument_names
 
         # transfer input to numpy arrays
-        Y, T, X, W, Z = check_input_arrays(Y, T, X, W, Z)
+        Y_dowhy, T_dowhy, X_dowhy, W_dowhy, Z_dowhy = check_input_arrays(Y_dowhy, T_dowhy, X_dowhy, W_dowhy, Z_dowhy)
         # transfer input to 2d arrays
         n_obs = Y.shape[0]
-        Y, T, X, W, Z = reshape_arrays_2dim(n_obs, Y, T, X, W, Z)
+        Y_dowhy, T_dowhy, X_dowhy, W_dowhy, Z_dowhy = reshape_arrays_2dim(n_obs, Y_dowhy, T_dowhy, X_dowhy, W_dowhy, Z_dowhy)
         # create dataframe
-        df = pd.DataFrame(np.hstack((Y, T, X, W, Z)), columns=column_names)
+        df = pd.DataFrame(np.hstack((Y_dowhy, T_dowhy, X_dowhy, W_dowhy, Z_dowhy)), columns=column_names)
 
         # currently dowhy only support single outcome and single treatment
-        assert Y.shape[1] == 1, "Can only accept single dimensional outcome."
-        assert T.shape[1] == 1, "Can only accept single dimensional treatment."
+        assert Y_dowhy.shape[1] == 1, "Can only accept single dimensional outcome."
+        assert T_dowhy.shape[1] == 1, "Can only accept single dimensional treatment."
 
         # call dowhy
         self.dowhy_ = CausalModel(
@@ -159,9 +159,9 @@ class DoWhyWrapper:
             treatment=treatment_names,
             outcome=outcome_names,
             graph=graph,
-            common_causes=feature_names + confounder_names if X.shape[1] > 0 or W.shape[1] > 0 else None,
-            instruments=instrument_names if Z.shape[1] > 0 else None,
-            effect_modifiers=feature_names if X.shape[1] > 0 else None,
+            common_causes=feature_names + confounder_names if X_dowhy.shape[1] > 0 or W_dowhy.shape[1] > 0 else None,
+            instruments=instrument_names if Z_dowhy.shape[1] > 0 else None,
+            effect_modifiers=feature_names if X_dowhy.shape[1] > 0 else None,
             estimand_type=estimand_type,
             proceed_when_unidetifiable=proceed_when_unidentifiable,
             missing_nodes_as_confounders=missing_nodes_as_confounders
