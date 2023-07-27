@@ -144,7 +144,7 @@ class DoWhyWrapper:
         # transfer input to numpy arrays
         Y_dowhy, T_dowhy, X_dowhy, W_dowhy, Z_dowhy = check_input_arrays(Y_dowhy, T_dowhy, X_dowhy, W_dowhy, Z_dowhy)
         # transfer input to 2d arrays
-        n_obs = Y.shape[0]
+        n_obs = Y_dowhy.shape[0]
         Y_dowhy, T_dowhy, X_dowhy, W_dowhy, Z_dowhy = reshape_arrays_2dim(n_obs, Y_dowhy, T_dowhy, X_dowhy, W_dowhy, Z_dowhy)
         # create dataframe
         df = pd.DataFrame(np.hstack((Y_dowhy, T_dowhy, X_dowhy, W_dowhy, Z_dowhy)), columns=column_names)
