@@ -125,17 +125,17 @@ class DoWhyWrapper:
         if treatment_names is None:
             treatment_names = get_input_columns(T, prefix="T")
         if feature_names is None:
-            if X_dowhy is not None:
+            if X is not None:
                 feature_names = get_input_columns(X, prefix="X")
             else:
                 feature_names = []
         if confounder_names is None:
-            if W_dowhy is not None:
+            if W is not None:
                 confounder_names = get_input_columns(W, prefix="W")
             else:
                 confounder_names = []
         if instrument_names is None:
-            if Z_dowhy is not None:
+            if Z is not None:
                 instrument_names = get_input_columns(Z, prefix="Z")
             else:
                 instrument_names = []
