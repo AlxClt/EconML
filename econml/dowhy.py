@@ -154,9 +154,9 @@ class DoWhyWrapper:
         assert T.shape[1] == 1, "Can only accept single dimensional treatment."
 
         if 'econml.dml' in self._cate_estimator.__module__:
-            common_causes = confounder_names if W.shape[1] > 0 else None,  
+            common_causes = confounder_names if W.shape[1] > 0 else None
         else:
-            common_causes=feature_names + confounder_names if X.shape[1] > 0 or W.shape[1] > 0 else None
+            common_causes = feature_names + confounder_names if X.shape[1] > 0 or W.shape[1] > 0 else None
             
         # call dowhy
         self.dowhy_ = CausalModel(
